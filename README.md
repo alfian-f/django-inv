@@ -104,7 +104,8 @@ My account has been disabled in Adaptable :(
 
 ## Flow of Client Requests to a Django Web App 
 <img src="IMG/diagram.png">
-the flow of client requests to a Django web app involves routing the request through `urls.py` to the appropriate view function in `views.py.` The view function interacts with the model in `models.py` to retrieve or modify data and then renders an HTML template, which forms the HTTP response sent back to the client for display in the browser.
+
+the flow of client requests to a Django web app invovles routing the request through `urls.py` to the appropriate view function in `views.py`. The view function interacts with the model in `models.py` to retrieve or modify data and then renders an HTML template, which forms the HTTP response sent back to the client for display in the browser.
 
 ## Virtual Environment
 A virtual environment in software development serves to create isolated and self-contained environments for Python projects, primarily for dependency isolation, version compatibility, and maintaining a clean development environment. While it is technically possible to create a Django web app without a virtual environment, it is strongly discouraged due to potential dependency conflicts, lack of isolation, and reduced portability. Using a virtual environment is highly recommended for Django web app development as it ensures a well-defined and isolated environment, making it easier to manage dependencies, prevent conflicts, and ensure consistent and reproducible project setups across different environments and deployments.
