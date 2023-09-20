@@ -279,19 +279,19 @@ return  render(request,  "create_item.html", context)
 
 def  show_xml(request):
 	data = Item.objects.all()
-	return  HttpResponse(serializers.serialize("xml", data),  				content_type="application/xml")
+	return  HttpResponse(serializers.serialize("xml", data),content_type="application/xml")
 
 def  show_json(request):
 	data = Item.objects.all()
-	return  HttpResponse(serializers.serialize("json", data),  content_type="application/json")
+	return  HttpResponse(serializers.serialize("json", data),content_type="application/json")
 
 def  show_xml_by_id(request,  id):
 	data = Item.objects.filter(pk=id)
-	return  HttpResponse(serializers.serialize("xml", data),  content_type="application/xml")
+	return  HttpResponse(serializers.serialize("xml", data),content_type="application/xml")
 
 def  show_json_by_id(request,  id):
 	data = Item.objects.filter(pk=id)
-	return  HttpResponse(serializers.serialize("json", data),  content_type="application/json")
+	return  HttpResponse(serializers.serialize("json", data),content_type="application/json")
 ```
 
 #### Create URL routing for each of the views added in point 2.
@@ -311,8 +311,8 @@ path('json/<int:id>/', show_json_by_id,  name='show_json_by_id'),
 ```
 
 #### Access the five URLs in point 2 using Postman, take screenshots of the results in Postman, and add them to README.md.
-<img src="/IMG/json"><br />
-<img src="/IMG/xml"><br />
-<img src="/IMG/html"><br />
-<img src="/IMG/json_id"><br />
-<img src="/IMG/xml_id"><br />
+<img src="/IMG/json.png"><br />
+<img src="/IMG/xml.png"><br />
+<img src="/IMG/html.png"><br />
+<img src="/IMG/json_id.png"><br />
+<img src="/IMG/xml_id.png"><br />
