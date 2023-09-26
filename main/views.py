@@ -1,24 +1,44 @@
+import datetime
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.http import HttpResponse
+from django.urls import reverse
 from django.core import serializers
 from main.forms import ItemForm
 from main.models import Item
 from django.shortcuts import redirect
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages  
-from django.contrib.auth import authenticate, login
-from django.contrib.auth import logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-import datetime
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.contrib.auth.forms import UserCreationForm
 
 # Create your views here.
 @login_required(login_url='/login')
 def show_main(request):
     items = Item.objects.filter(user=request.user)
+
+    if request.method == "POST":
+        if 'increment' in request.POST:
+            item_id = request.POST.get('increment')
+            item = items.get(id=item_id)
+            item.amount += 1
+            item.save()
+            return HttpResponseRedirect(reverse('main:show_main'))
+        elif 'decrement' in request.POST:
+            item_id = request.POST.get('decrement')
+            item = items.get(id=item_id)
+            item.amount -= 1
+            if item.amount <= 0:
+                item.delete()
+                return HttpResponseRedirect(reverse('main:show_main'))
+            else:
+                item.save()
+                return HttpResponseRedirect(reverse('main:show_main'))
+        elif 'delete' in request.POST:
+            item_id = request.POST.get('delete')
+            item = items.get(id=item_id)
+            item.delete()
+            return HttpResponseRedirect(reverse('main:show_main'))
 
     context = {
         'name': request.user.username,
@@ -89,3 +109,8 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
+
+def delete_item(request, id):
+    item = Item.objects.get(pk=id)
+    item.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))

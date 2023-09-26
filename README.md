@@ -316,3 +316,107 @@ path('json/<int:id>/', show_json_by_id,  name='show_json_by_id'),
 <img src="/IMG/html.png"><br />
 <img src="/IMG/json_id.png"><br />
 <img src="/IMG/xml_id.png"><br />
+
+## What is  `UserCreationForm`  in Django? Explain its advantages and disadvantages.
+Django's pre-built form class, `UserCreationForm`, makes it easier to create user accounts by including standard fields for username, password, and email, among other things. It makes ensuring that data is validated, cutting down on development time and fostering uniformity. Customization, however, is restricted and not particularly appropriate for complicated or heavily customized registration forms.
+
+## What is the difference between authentication and authorization in Django application? Why are both important?
+Authentication verifies a user's identity using specified credentials, such as a username and password. What activities or resources an authenticated user is allowed to access within the program is determined by authorization. In order to limit access and protect sensitive data, authorization is just as important as authentication in making sure users are who they say they are. Both are essential for user experience customization based on roles and permissions, security, data protection, limited access, and compliance.
+
+## What are  `cookies`  in website? How does Django use  `cookies`  to manage user session data?
+Cookies are data files that users' browsers store to keep track of their preferences and interactions. By saving a distinct session ID in the user's browser, cookies are used to manage user sessions. By connecting session-specific data saved on the server, this session ID helps maintain security and user identity. In order to improve privacy and enable safe session management with options for data expiration and cleanup, the actual session data is kept on the server.
+
+## Are  `cookies`  secure to use? Is there potential risk to be aware of?
+Although cookies are generally safe, inappropriate handling can provide problems. They have the capacity to hold sensitive data, so it's crucial to avoid keeping sensitive information there. Input validation and escape techniques should be used to stop XSS attacks, and HTTPS should be used to guard against data interception. 
+
+## Assignment Steps #3
+-  #### Implement registration, login, and logout functions to allow users to access the previous application.
+1. Import redirect, UserCreationForm, and messages to `views.py`
+2. Create the functions in `views.py`:
+```py
+def  register(request):
+	form =  UserCreationForm()
+	
+	if request.method ==  "POST":
+		form =  UserCreationForm(request.POST)
+		if form.is_valid():
+			form.save()
+			messages.success(request,  'Your account has been successfully created!')
+			return  redirect('main:login')
+	context =  {'form':form}
+	return  render(request,  'register.html', context)
+
+def  login_user(request):
+	if request.method ==  'POST':
+		username = request.POST.get('username')
+		password = request.POST.get('password')
+		user =  authenticate(request,  username=username,  password=password)
+		if user is  not  None:
+			login(request, user)
+			response =  HttpResponseRedirect(reverse("main:show_main"))
+			response.set_cookie('last_login',  str(datetime.datetime.now()))
+			return response
+		else:
+			messages.info(request,  'Sorry, incorrect username or password. Please try again.')
+	context =  {}
+	return  render(request,  'login.html', context)
+
+def  logout_user(request):
+	logout(request)
+	response =  HttpResponseRedirect(reverse('main:login'))
+	response.delete_cookie('last_login')
+	return response
+```    
+3. Create HTML file for the register & login function, named `register.html` and `login.html` in main\templates.
+4. Import all the functions into `urls.py` and add new path url to urlpatterns
+
+-  #### Create  **two**  user accounts with  **three**  dummy data entries for each account using the model previously created in the application.
+Did this by activating virtual environment and running the server with `python manage.py runserver`. Then I went to `localhost:8000` and created 2 accounts with 3 dummy data.
+    
+-  #### Connect  `Item`  model with  `User`.
+Import `user` from `django.contrib.auth.models` in `models.py`, then add 
+```py
+user = models.ForeignKey(User, on_delete=models.CASCADE)
+```
+to the existing item class. In `views.py` modify create_item with
+```py
+def  create_item(request):  
+form = ItemForm(request.POST or  None)  
+  
+if form.is_valid()  and request.method ==  "POST":  
+item = form.save(commit=False)  
+item.user = request.user  
+item.save()  
+return HttpResponseRedirect(reverse('main:show_main'))
+```
+and show_main with:
+```py
+def  show_main(request):  
+products = Product.objects.filter(user=request.user)  
+  
+context =  {  
+'name': request.user.username,
+```
+lastly, save all changes and run the migrations for the model using `python manage.py makemigrations` & `python manage.py migrate`
+    
+-  #### Display the information of the logged-in user, such as their username, and applying  `cookies`, such as  `last login`, on the main application page.
+modify login_user in `models.py` with:
+```py
+...
+if user is not None:
+    login(request, user)
+    response = HttpResponseRedirect(reverse("main:show_main")) 
+    response.set_cookie('last_login', str(datetime.datetime.now()))
+    return response
+...
+```
+then add `'last_login': request.COOKIES['last_login']` to the context in `show_main` function.
+modify `logout_user` with:
+```py
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
+```
+then add `<h5>Last login session: {{ last_login }}</h5>` to `main.html`

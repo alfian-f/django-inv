@@ -23,6 +23,20 @@
             <td>{{item.price}}</td>
             <td>{{item.amount}}</td>
             <td>{{item.description}}</td>
+            <td>
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="increment" value="{{ item.id }}">
+                        +
+                    </button>
+                    <button type="submit" name="decrement" value="{{ item.id }}">
+                        -
+                    </button>
+                    <button type="submit" name="delete" value="{{ item.id }}">
+                        DELETE
+                    </button>
+                </form>
+            </td>
         </tr>
     {% endfor %}
 </table>
@@ -42,4 +56,5 @@
         Logout
     </button>
 </a>
+
 {% endblock content %}
