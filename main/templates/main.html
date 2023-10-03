@@ -1,60 +1,71 @@
 {% extends 'base.html' %}
 
+{% block meta %}
+    {% load static %}
+    <title>Django's Inventory</title>
+    <link rel="stylesheet", href="{% static 'main.css' %}">
+{% endblock meta %}
+
 {% block content %}
-    <h1>Django's Inventory</h1>
+<div class="container" id="base">
 
-    <h5>Name:</h5>
-    <p>{{name}}</p>
+    <nav class="navbar sticky-top navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Django's Inventory</span>
+            <span class="navbar-text">{{ name }} | {{ class }}</span>
+        </div>
+        <form class="d-flex">
+            <a href="{% url 'main:logout' %}">
+                <button class="btn btn-danger me-2" type="button">Logout</button>
+            </a>
+        </form>
+    </nav>
 
-    <h5>Class:</h5>
-    <p>{{class}}</p>
-
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Amount</th>
-        <th>Description</th>
-    </tr>
-
-    {% for item in items %}
-        <tr>
-            <td>{{item.name}}</td>
-            <td>{{item.price}}</td>
-            <td>{{item.amount}}</td>
-            <td>{{item.description}}</td>
-            <td>
-                <form method="POST">
-                    {% csrf_token %}
-                    <button type="submit" name="increment" value="{{ item.id }}">
+<div class="row row-cols-1 row-cols-md-4 g-4">
+{% for item in items %}
+    <div class="col">
+        <div class="card h-100 {% if forloop.last %}border-primary{% endif %}">
+            <div class="card-body">
+                <h5 class="card-title">{{item.name}} - {{item.amount}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">$ {{item.price}}</h6>
+                <p class="card-text">{{item.description}}</p>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'main:increment_item' item.pk %}">
+                    <button type="button" class="btn btn-outline-secondary">
                         +
                     </button>
-                    <button type="submit" name="decrement" value="{{ item.id }}">
+                </a>
+                <a href="{% url 'main:decrement_item' item.pk %}">
+                    <button type="button" class="btn btn-outline-secondary">
                         -
                     </button>
-                    <button type="submit" name="delete" value="{{ item.id }}">
-                        DELETE
+                </a>
+                <a href="{% url 'main:edit_item' item.pk %}">
+                    <button type="button" class="btn btn-outline-secondary">
+                        Edit
                     </button>
-                </form>
-            </td>
-        </tr>
-    {% endfor %}
-</table>
+                </a>
+                <a href="{% url 'main:delete_item' item.pk %}">
+                    <button type="button" class="btn btn-outline-primary">
+                        Delete
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
 
-<br />
 
-<a href="{% url 'main:create_item' %}">
-    <button>
-        Add New Item
-    </button>
-</a>
+    <br />
 
-<h5>Last login session: {{ last_login }}</h5>
+    <a href="{% url 'main:create_item' %}">
+        <button type="button" class="btn btn-primary mb-3">
+            Add New Item
+        </button>
+    </a>
 
-<a href="{% url 'main:logout' %}">
-    <button>
-        Logout
-    </button>
-</a>
-
+    <h5>Last login session: {{ last_login }}</h5>
+</div>
 {% endblock content %}

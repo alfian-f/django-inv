@@ -1,45 +1,48 @@
 {% extends 'base.html' %}
 
 {% block meta %}
-    <title>Login</title>
+    {% load static %}
+    <title>Django's Inventory | Login</title>
+    <link rel="stylesheet", href="{% static 'login.css' %}">
 {% endblock meta %}
 
 {% block content %}
-
-<div class = "login">
-
-    <h1>Login</h1>
-
-    <form method="POST" action="">
-        {% csrf_token %}
-        <table>
-            <tr>
-                <td>Username: </td>
-                <td><input type="text" name="username" placeholder="Username" class="form-control"></td>
-            </tr>
-                    
-            <tr>
-                <td>Password: </td>
-                <td><input type="password" name="password" placeholder="Password" class="form-control"></td>
-            </tr>
-
-            <tr>
-                <td></td>
-                <td><input class="btn login_btn" type="submit" value="Login"></td>
-            </tr>
-        </table>
-    </form>
-
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}     
-        
-    Don't have an account yet? <a href="{% url 'main:register' %}">Register Now</a>
-
+<div class="container">
+    <div class = "login">
+        <h1><b>Login</b></h1>
+        <form method="POST" action="">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <div class="form-floating mb-3">
+                        <input type="text" name="username" class="form-control" id="floatingInput" placeholder="Username">
+                        <label for="floatingInput">Username</label>
+                    </div>
+                </tr>
+                <tr>
+                    <div class="form-floating mb-3">
+                        <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password">
+                        <label for="floatingPassword">Password</label>
+                    </div>
+                </tr>
+                <tr>
+                    <div class="row">
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-lg btn-outline-primary mb-3">Login</button>
+                    </div>
+                    </div>
+                </tr>
+            </table>
+        </form>
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}     
+            
+        Don't have an account yet? <a href="{% url 'main:register' %}">Register Now</a>
+    </div>
 </div>
-
 {% endblock content %}

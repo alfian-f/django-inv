@@ -420,3 +420,48 @@ def logout_user(request):
     return response
 ```
 then add `<h5>Last login session: {{ last_login }}</h5>` to `main.html`
+
+## Explain the purpose of some CSS element selector and when to use it.
+
+- `type selector` targets specific HTML elements by their tag name, allowing you to style all instances of a particular element type. For instance, h1 targets all level-one headings for styling.
+
+- `class selector` is used to style multiple HTML elements that share a common class attribute. By applying a class selector (e.g., .highlight), you can style various elements with the same class, such as highlighting specific content.
+
+- `id selector` is employed to style a unique HTML element identified by its unique ID attribute. Using the id selector (e.g., #header), you can apply styles to a single, distinct element on the webpage. It's crucial to note that while multiple elements can share a class, an ID should be unique within the HTML document.
+
+## Explain some of the HTML5 tags that you know.
+-  `<header>` --- Defines the header or top section of a webpage, typically containing headings, navigation, and introductory content.
+
+-  ` <nav>` ---  Specifies a section of the document intended for navigation links, menus, or a table of contents.
+
+- `<section>` --- Represents a thematic grouping within a document, often used to group related content and provide a clear semantic structure.
+
+## What are the differences between margin and padding?
+-   `Margin` --- the space outside an element, creating separation between the element and its surrounding elements.
+-   `Padding` --- the space inside an element, creating separation between the element's content and its border.
+
+## What are the differences between the CSS framework Tailwind and Bootstrap? When should we use Bootstrap rather than Tailwind, and vice versa?
+1. Tailwind
+	- builds layouts by combining pre-defined utility classes.
+	- has a smaller CSS file compared to Bootstrap and only loads the utility classes used.
+	- offers high flexibility and adaptability to projects.
+	- Learning Tailwind CSS can have a steeper learning curve because it requires understanding and combining available utility classes.
+2. Bootstrap
+	- uses predefined styles and components with ready-made designs that can be used directly.
+	- has a larger CSS file due to the inclusion of many predefined components.
+	- often produces more consistent designs throughout a project as it uses predefined components.
+	- offers a quicker learning curve for beginners as they can start with predefined components.
+
+use Bootstrap for projects that require faster prototyping, ease of use, and a wide range of pre-styled components. On the other hand, choose Tailwind CSS for highly customizable and utility-first approaches, focusing on maintainability, scalability, and a developer-centric experience.
+
+## Assignment Steps #4
+- Adding Bootstrap
+add this code to the head of `base.html`
+```html
+<link  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"  rel="stylesheet"  integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"  crossorigin="anonymous">
+<script  src="https://code.jquery.com/jquery-3.6.0.min.js"  integrity="sha384-KyZXEAg3QhqLMpG8r+J4jsl5c9zdLKaUk5Ae5f5b1bw6AUn5f5v8FZJoMxm6f5cH1"  crossorigin="anonymous"></script>
+<script  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"  integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"  crossorigin="anonymous"></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"  integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"  crossorigin="anonymous"></script>
+```
+- Customizing the website
+Changed the background color, layout, and the way to view the items by making it into cards, did this by using the provided bootstrap predefined styles and components, and some custom CSS that is located in a static file inside the django app folder.

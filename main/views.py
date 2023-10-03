@@ -17,29 +17,6 @@ from django.contrib.auth.forms import UserCreationForm
 def show_main(request):
     items = Item.objects.filter(user=request.user)
 
-    if request.method == "POST":
-        if 'increment' in request.POST:
-            item_id = request.POST.get('increment')
-            item = items.get(id=item_id)
-            item.amount += 1
-            item.save()
-            return HttpResponseRedirect(reverse('main:show_main'))
-        elif 'decrement' in request.POST:
-            item_id = request.POST.get('decrement')
-            item = items.get(id=item_id)
-            item.amount -= 1
-            if item.amount <= 0:
-                item.delete()
-                return HttpResponseRedirect(reverse('main:show_main'))
-            else:
-                item.save()
-                return HttpResponseRedirect(reverse('main:show_main'))
-        elif 'delete' in request.POST:
-            item_id = request.POST.get('delete')
-            item = items.get(id=item_id)
-            item.delete()
-            return HttpResponseRedirect(reverse('main:show_main'))
-
     context = {
         'name': request.user.username,
         'class': 'PBP KKI',
@@ -114,3 +91,30 @@ def delete_item(request, id):
     item = Item.objects.get(pk=id)
     item.delete()
     return HttpResponseRedirect(reverse('main:show_main'))
+
+def edit_item(request, id):
+    item = Item.objects.get(pk = id)
+    form = ItemForm(request.POST or None, instance=item)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    context = {'form': form}
+    return render(request, "edit_item.html", context)
+
+def increment_item(request, id):
+    item = Item.objects.get(pk = id)
+    item.amount += 1
+    item.save()
+    return HttpResponseRedirect(reverse('main:show_main'))
+
+def decrement_item(request, id):
+    item = Item.objects.get(pk = id)
+    item.amount -= 1
+    if item.amount <= 0:
+        item.delete()
+        return HttpResponseRedirect(reverse('main:show_main'))
+    else:
+        item.save()
+        return HttpResponseRedirect(reverse('main:show_main'))

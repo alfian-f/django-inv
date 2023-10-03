@@ -1,15 +1,16 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
 {% block meta %}
     {% load static %}
-    <title>Django's Inventory | Add Item</title>
+    <title>Django's Inventory | Edit Item</title>
     <link rel="stylesheet", href="{% static 'item.css' %}">
 {% endblock meta %}
 
 {% block content %}
+
 <div class="container">
     <div class="item">
-        <h1>Add New Item</h1>
+        <h1>Edit Item</h1>
 
         <form method="POST">
             {% csrf_token %}
@@ -18,7 +19,7 @@
                 <tr>
                     <td></td>
                     <td>
-                        <input type="submit" value="Add Item"/>
+                        <input type="submit" value="Edit Item"/>
                     </td>
                 </tr>
             </table>
