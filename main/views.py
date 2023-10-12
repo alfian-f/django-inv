@@ -1,6 +1,6 @@
 import datetime
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.http import HttpResponse
 from django.urls import reverse
 from django.core import serializers
@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 @login_required(login_url='/login')
@@ -118,3 +119,48 @@ def decrement_item(request, id):
     else:
         item.save()
         return HttpResponseRedirect(reverse('main:show_main'))
+    
+def get_item_json(request):
+    item = Item.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize('json', item))
+
+@csrf_exempt
+def create_ajax(request):
+    if request.method == 'POST':
+        name = request.POST.get("name")
+        amount = request.POST.get("amount")
+        price = request.POST.get("price")
+        category = request.POST.get("category")
+        description = request.POST.get("description")
+        user = request.user
+
+        new_item = Item(name=name, amount=amount, price=price, category=category, description=description, user=user)
+        new_item.save()
+
+        return HttpResponse(b"CREATED", status=201)
+
+    return HttpResponseNotFound()
+
+@csrf_exempt
+def delete_ajax(request, id):
+    item = Item.objects.get(pk=id)
+    item.delete()
+    return HttpResponse(b"DELETED", status=201)
+
+@csrf_exempt
+def increment_ajax(request, id):
+    item = Item.objects.get(pk=id)
+    item.amount += 1
+    item.save()
+    return HttpResponse(b"INCREMENTED", status=201)
+
+@csrf_exempt
+def decrement_ajax(request, id):
+    item = Item.objects.get(pk=id)
+    item.amount -= 1
+    if item.amount <= 0:
+        item.delete()
+        return HttpResponse(b"DELETED", status=201)
+    else:
+        item.save()
+        return HttpResponse(b"DECREMENTED", status=201)

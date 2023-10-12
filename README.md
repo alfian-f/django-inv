@@ -465,3 +465,197 @@ add this code to the head of `base.html`
 ```
 - Customizing the website
 Changed the background color, layout, and the way to view the items by making it into cards, did this by using the provided bootstrap predefined styles and components, and some custom CSS that is located in a static file inside the django app folder.
+
+## Explain the difference between  **asynchronous programming**  and  **synchronous programming**.
+
+* `synchronous programming`
+executes tasks one after the other, blocking until each task is completed
+* `asynchronous programming` 
+initiates tasks and continues without blocking, handling the results via callbacks or other mechanisms once the tasks are finished.
+
+## In the implementation of JavaScript and AJAX, there is an implemented paradigm called  **the event-driven programming paradigm**. Explain what this paradigm means and give one example of its implementation in this assignment.
+
+Event-driven programming is a paradigm where the flow of the program is determined by events such as user interactions. One of its implementation in this assignment is a button to add new item and update the list of items without refreshing the page.
+
+## Explain the implementation of asynchronous programming in AJAX.
+by making asynchronous request to the HTTP Server using the async and await command. Those command will wait for an input to then be executed without refreshing the web page.
+
+## In this semester, the implementation of AJAX is done using the Fetch API rather than the jQuery library. Compare the two technologies and write down your opinion which technology is better to use.
+* AJAX
+`Ajax` is a technique used to send and retrieve data from a server asynchronously without requiring a page refresh. It allows for dynamic updates of content on a webpage without a full reload.
+
+* jQuery
+`jQuery` is a JavaScript library that simplifies DOM manipulation, event handling, animations, and AJAX interactions. It provides a set of pre-built functions and utilities to make web development easier and more efficient.
+
+In my opinion, `Fetch API` is better to use because it is more modern and its syntax are simpler than jQuery.
+
+## Assignment Steps #5
+1. Import  `from django.views.decorators.csrf import csrf_exempt`  in  `views.py`.
+2. Create AJAX function in `views.py` and add urlpattern for the functions in `urls.py`
+``` py
+# views.py
+def get_item_json(request): # get item objects
+    item = Item.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize('json', item))
+
+@csrf_exempt
+def create_ajax(request): # create item function
+    if request.method == 'POST':
+        name = request.POST.get("name")
+        amount = request.POST.get("amount")
+        price = request.POST.get("price")
+        category = request.POST.get("category")
+        description = request.POST.get("description")
+        user = request.user
+
+        new_item = Item(name=name, amount=amount, price=price, category=category, description=description, user=user)
+        new_item.save()
+
+        return HttpResponse(b"CREATED", status=201)
+
+    return HttpResponseNotFound()
+
+@csrf_exempt
+def delete_ajax(request, id): # delete item function
+    item = Item.objects.get(pk=id)
+    item.delete()
+    return HttpResponse(b"DELETED", status=201)
+
+@csrf_exempt
+def increment_ajax(request, id): # increment item function
+    item = Item.objects.get(pk=id)
+    item.amount += 1
+    item.save()
+    return HttpResponse(b"INCREMENTED", status=201)
+
+@csrf_exempt
+def decrement_ajax(request, id): # decrement item function
+    item = Item.objects.get(pk=id)
+    item.amount -= 1
+    if item.amount <= 0:
+        item.delete()
+        return HttpResponse(b"DELETED", status=201)
+    else:
+        item.save()
+        return HttpResponse(b"DECREMENTED", status=201)
+```
+```py
+# urls.py
+...
+	path('get-item/', get_item, name='get_item'),
+	path('create-ajax/', create_ajax, name='create_ajax'),
+    path('delete-ajax/<int:id>', delete_ajax, name='delete_ajax'),
+    path('increment-ajax/<int:id>', increment_ajax, name='increment_ajax'),
+    path('decrement-ajax/<int:id>', decrement_ajax, name='decrement_ajax')
+...
+```
+3. Create a table in the main.html with `<table  id="item_table"></table>`
+4. Create a script for showing the item using `fetch()` API
+```js
+<script>
+async  function  getItems() {
+	return  fetch("{% url 'main:get_item_json' %}").then((res)  => res.json())
+}
+</script>
+```
+5. Create another async function for refreshing the items asynchronously
+```js
+async function refreshItems() {
+        document.getElementById("item_table").innerHTML = ""
+        const items = await getItems()
+        let htmlString = `<div class="row row-cols-1 row-cols-md-5 g-4">`
+        items.forEach((item) => {
+            htmlString += `\n<div class="col">
+                <div class="card h-100 {% if forloop.last %}border-primary{% endif %}">
+                    <div class="card-body">
+                        <h5 class="card-title">${item.fields.name} - ${item.fields.amount}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">$ ${item.fields.price}</h6>
+                        <p class="card-text">${item.fields.description}</p>
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-outline-secondary" onclick="decItem(${item.pk})">-</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="incItem(${item.pk})">+</button>
+                        <button type="button" class="btn btn-danger" onclick="delItem(${item.pk})">Delete</button>
+                    </div>
+                </div>
+            </div>` 
+        })
+        htmlString += '\n</div>'
+        
+        document.getElementById("item_table").innerHTML = htmlString
+    }
+
+    refreshItems()
+```
+6. Create a modal form to add item
+```html
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Item</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form" onsubmit="return false;">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="name" name="name"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="col-form-label">Amount:</label>
+                        <input type="number" class="form-control" id="amount" name="amount"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="col-form-label">Price:</label>
+                        <input type="number" class="form-control" id="price" name="price"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="col-form-label">Category:</label>
+                        <input type="text" class="form-control" id="category" name="category"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="col-form-label">Description:</label>
+                        <textarea class="form-control" id="description" name="description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Add Item</button>
+            </div>
+        </div>
+    </div>
+</div>
+```
+and add a button to access the modal using `<button  type="button"  class="btn btn-primary"  data-bs-toggle="modal"  data-bs-target="#exampleModal">+</button>`
+
+7. Create a function to add item in `<script>`
+```js
+function addItem() {
+        fetch("{% url 'main:create_ajax' %}", {
+            method: "POST",
+            body: new FormData(document.querySelector('#form'))
+        }).then(refreshItems)
+
+        document.getElementById("form").reset()
+        return false
+    }
+    
+document.getElementById("button_add").onclick  = addItem
+```
+
+8. Bonus: Create a delete item
+I created the delete function with inspiration from the addItem function
+```js
+function delItem(id) {
+        fetch("/delete-ajax/" + id,{
+            method: "POST"
+        }).then(refreshItems)
+
+        document.getElementById("form").reset()
+        return false
+    }
+```
+add a delItem button with `<button type="button" class="btn btn-danger" onclick="delItem(${item.pk})">Delete</button>`
