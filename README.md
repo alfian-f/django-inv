@@ -1,4 +1,4 @@
-# Django's Inventory
+# [Django's Inventory](http://alfian-fadhlurrahman-tugas.pbp.cs.ui.ac.id/)
 #### Alfian Fadhlurrahman - 2206821683
 
 ## Assignment Steps
