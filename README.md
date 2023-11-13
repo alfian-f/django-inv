@@ -1,5 +1,5 @@
 # [Django's Inventory](http://alfian-fadhlurrahman-tugas.pbp.cs.ui.ac.id/)
-#### Alfian Fadhlurrahman - 2206821683
+#### Alfian Fadhlurrahman | 2206821683
 
 ## Assignment Steps
 - #### Create a new Django project.
