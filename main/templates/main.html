@@ -7,6 +7,13 @@
 {% endblock meta %}
 
 {% block content %}
+<style>
+    .card-body-limit {
+        max-height: 200px;
+        overflow: hidden;
+    }
+</style>
+
 <div class="container" id="base">
 
     <nav class="navbar sticky-top navbar-expand-lg bg-body-tertiary">
@@ -76,11 +83,12 @@
     async function refreshItems() {
         document.getElementById("item_table").innerHTML = ""
         const items = await getItems()
-        let htmlString = `<div class="row row-cols-1 row-cols-md-5 g-4">`
+        let htmlString = `<div class="container" style:"justify-content: center; display: flex; width: full;">
+            <div style="gap: 2rem; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center;">`
         items.forEach((item) => {
-            htmlString += `\n<div class="col">
-                <div class="card h-100 {% if forloop.last %}border-primary{% endif %}">
-                    <div class="card-body">
+            htmlString += `\n<div>
+                <div class="card " style="width: 200px; height: 200px;">
+                    <div class="card-body card-body-limit">
                         <h5 class="card-title">${item.fields.name} - ${item.fields.amount}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">$ ${item.fields.price}</h6>
                         <p class="card-text">${item.fields.description}</p>
@@ -93,7 +101,7 @@
                 </div>
             </div>` 
         })
-        htmlString += '\n</div>'
+        htmlString += '\n</div> \n</div>'
         
         document.getElementById("item_table").innerHTML = htmlString
     }
