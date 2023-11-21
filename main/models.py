@@ -10,3 +10,4 @@ class Item(models.Model):
     description = models.TextField()
     category = models.CharField(max_length=100)
     price = models.IntegerField()
+    is_discount = models.BooleanField(default=False)
