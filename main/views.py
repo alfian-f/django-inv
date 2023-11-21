@@ -1,6 +1,6 @@
 import datetime
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.http import HttpResponse
 from django.urls import reverse
 from django.core import serializers
@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.csrf import csrf_exempt
+import json
 
 # Create your views here.
 @login_required(login_url='/login')
@@ -164,3 +165,24 @@ def decrement_ajax(request, id):
     else:
         item.save()
         return HttpResponse(b"DECREMENTED", status=201)
+    
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        
+        data = json.loads(request.body)
+
+        new_product = Item.objects.create(
+            user = request.user,
+            name = data["name"],
+            amount = int(data["amount"]),
+            description = data["description"],
+            category = data["category"],
+            price = int(data["price"]),
+        )
+
+        new_product.save()
+
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
